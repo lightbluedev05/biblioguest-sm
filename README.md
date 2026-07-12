@@ -1,17 +1,7 @@
-# INTEGRANTES
-- Mihael Jhire Cristobal Rojas
-- Miguel Alonso Solis Cunza
-- Carol Sofia Montes Ramos
-- Ricardo Jose Matamoros Laura
-- Luis Arroyo Tapia
 
 # 📚 BiblioGest
 
 Sistema integral de gestión bibliotecaria desarrollado para la Universidad Nacional Mayor de San Marcos (UNMSM). BiblioGest permite la administración eficiente de préstamos de libros, reservas de laptops y cubículos, gestión de usuarios y sanciones.
-
-> 🎥 **Video de Exposición**: El enlace al video de la presentación del proyecto se encuentra en el archivo [`EnlaceVideo.txt`](./1.ENTREGA_FINAL/EnlaceVideo.txt) en la raíz del repositorio.
-
-> 🎥 **Entrega Final - ConsultoraFisi**: El entregable final con todos nuestros scripts y los modelos necesarios para el diseño de nuestra base de datos. [`EntregaFinal - Consultora FISI`](<./1.ENTREGA_FINAL/EntregaFinal - Consultora FISI/>)
 
 ---
 
@@ -307,27 +297,9 @@ Configurar servidor Node.js con PM2 o similar.
 
 ---
 
-## 👥 Equipo de Desarrollo
-
-- **Mihael Cristobal** - Full Stack Developer
-- **Ricardo Matamoros** - Backend Developer  
-- **Miguel Solis** - Frontend Developer
-- **Luis Arroyo** - Full Stack Developer
-- **Carol Montes** - Frontend Developer
-
----
-
 ## 📄 Licencia
 
 Este proyecto fue desarrollado como parte del curso de Base de Datos de la UNMSM.
-
----
-
-## 📞 Contacto
-
-Para consultas sobre el proyecto:
-- Email: biblioteca@unmsm.edu.pe
-- Teléfono: +51 1 619-7000
 
 ---
 
