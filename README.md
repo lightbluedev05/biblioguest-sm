@@ -9,10 +9,13 @@ Sistema integral de gestión bibliotecaria desarrollado para la Universidad Naci
 
 ```
 BiblioGest/
-├── BACKEND/              # Servidor Node.js + Express
-├── FRONTEND/             # Aplicación React con Vite
-├── oracle/               # Base de datos Oracle
-└── CONTRIBUTING.md       # Guía de contribución
+├── BACKEND/                # Servidor Node.js + Express
+├── FRONTEND/               # Aplicación React con Vite
+├── oracle/                 # Base de datos Oracle (scripts SQL de inicialización)
+├── CONTRIBUTING.md         # Guía de contribución y flujo de trabajo
+├── InstructionsDocker.md   # Instrucciones detalladas de despliegue con Docker
+├── docker-compose.yml      # Configuración de Docker Compose (servicios app y DB)
+└── .env                    # Variables de entorno locales (no trackeado)
 ```
 
 ---
@@ -42,13 +45,14 @@ BACKEND/
 │   │   └── db.js           # Conexión a base de datos
 │   ├── controllers/        # Lógica de negocio
 │   ├── middleware/
+│   │   ├── authMiddleware.js # Middleware de autenticación JWT y roles
 │   │   ├── errors.js       # Manejo de errores
 │   │   └── validation.js   # Validación de datos
 │   ├── models/             # Modelos de datos
 │   ├── routes/             # Rutas de la API
 │   ├── services/           # Servicios de negocio
 │   └── util/
-│       └── answers.js      # Respuestas estandarizadas
+│       └── respuestas.js   # Respuestas estandarizadas en español
 ├── package.json
 └── .gitignore
 ```
@@ -74,9 +78,83 @@ FRONTEND/
 │   ├── main.jsx                   # Punto de entrada
 │   ├── styles.css                 # Estilos globales con Tailwind
 │   │
-│   ├── globals/                   # Componentes compartidos
-│   │   ├── components/
-│   │   │   ├── atoms/            # Componentes básicos
+│   ├── Colors/
+│   │   └── ColorPalette.jsx       # Paleta de colores del proyecto
+│   │
+│   ├── assets/                    # Archivos estáticos como imágenes y logos
+│   │
+│   ├── pages/                     # Vistas y componentes específicos por ruta
+│   │   ├── public/                # Páginas de acceso público
+│   │   │   ├── Landing/           # Página de inicio
+│   │   │   │   ├── LandingPage.jsx
+│   │   │   │   └── components/
+│   │   │   │       └── HeroSection.jsx
+│   │   │   ├── Login/             # Página de inicio de sesión
+│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   └── components/
+│   │   │   │       └── LoginForm.jsx
+│   │   │   └── Catalogo/          # Catálogo público de libros
+│   │   │       ├── page/
+│   │   │       │   └── Libros.jsx
+│   │   │       └── components/
+│   │   │           ├── atomos/
+│   │   │           │   ├── Badge.jsx
+│   │   │           │   ├── BookCover.jsx
+│   │   │           │   ├── Button.jsx
+│   │   │           │   └── Modal.jsx
+│   │   │           ├── moleculas/
+│   │   │           │   ├── ActiveReservationNotification.jsx
+│   │   │           │   ├── BookCard.jsx
+│   │   │           │   ├── BookDetailModal.jsx
+│   │   │           │   └── FilterControls.jsx
+│   │   │           └── organismos/
+│   │   │               └── BookGrid.jsx
+│   │   │
+│   │   ├── estudiante/            # Páginas exclusivas para Estudiantes
+│   │   │   ├── laptops/
+│   │   │   │   ├── LaptopReservationPage.jsx
+│   │   │   │   └── components/
+│   │   │   │       └── ReservationTemplate.jsx
+│   │   │   ├── cubiculos/
+│   │   │   │   └── page/
+│   │   │   │       └── Cubiculos.jsx
+│   │   │   └── prestamos/
+│   │   │       └── MisPrestamosPage.jsx
+│   │   │
+│   │   ├── bibliotecario/         # Páginas exclusivas para Bibliotecarios
+│   │   │   ├── libros/
+│   │   │   │   └── GestionLibros.jsx
+│   │   │   ├── prestamos/
+│   │   │   │   └── GestionPrestamos.jsx
+│   │   │   ├── laptops/
+│   │   │   │   └── GestionLaptops.jsx
+│   │   │   ├── cubiculos/
+│   │   │   │   └── GestionCubiculos.jsx
+│   │   │   ├── reservas/
+│   │   │   │   ├── GestionReservasLaptops.jsx
+│   │   │   │   └── GestionReservasCubiculos.jsx
+│   │   │   └── usuarios/
+│   │   │       └── GestionUsuarios.jsx
+│   │   │
+│   │   ├── admin/                 # Páginas exclusivas para Administradores
+│   │   │   ├── bibliotecarios/
+│   │   │   │   └── GestionBibliotecarios.jsx
+│   │   │   ├── sanciones/
+│   │   │   │   └── GestionSanciones.jsx
+│   │   │   └── configuracion/
+│   │   │       └── Configuracion.jsx
+│   │   │
+│   │   ├── dashboard/             # Tableros principales
+│   │   │   ├── DashboardAdmin.jsx
+│   │   │   └── DashboardEstudiante.jsx
+│   │   │
+│   │   └── donaciones/            # Página de donaciones de libros
+│   │       └── page/
+│   │           └── Donaciones.jsx
+│   │
+│   ├── shared/                    # Recursos compartidos globalmente
+│   │   ├── components/            # Componentes reutilizables comunes
+│   │   │   ├── atoms/             # Componentes básicos (Alert, Button, etc.)
 │   │   │   │   ├── Alert.jsx
 │   │   │   │   ├── Badge.jsx
 │   │   │   │   ├── Button.jsx
@@ -85,60 +163,30 @@ FRONTEND/
 │   │   │   │   ├── Input.jsx
 │   │   │   │   ├── Select.jsx
 │   │   │   │   └── TimePicker.jsx
-│   │   │   │
-│   │   │   ├── molecules/        # Componentes compuestos
+│   │   │   ├── molecules/         # Componentes intermedios (Modal, SearchBar)
 │   │   │   │   ├── FilterGroup.jsx
 │   │   │   │   ├── LaptopCard.jsx
+│   │   │   │   ├── Modal.jsx
 │   │   │   │   ├── NewsCard.jsx
 │   │   │   │   ├── SearchBar.jsx
 │   │   │   │   ├── SidebarItem.jsx
 │   │   │   │   └── TimeRangeSelector.jsx
-│   │   │   │
-│   │   │   └── organism/         # Componentes complejos
+│   │   │   └── organism/          # Elementos complejos (Navbar, Sidebar)
 │   │   │       ├── Footer.jsx
 │   │   │       ├── LaptopList.jsx
 │   │   │       ├── Navbar.jsx
 │   │   │       ├── NewsSection.jsx
 │   │   │       ├── ReservationFilters.jsx
 │   │   │       └── Sidebar.jsx
-│   │   │
-│   │   └── layaout/
-│   │       └── MainLayout.jsx     # Layout principal con sidebar
+│   │   ├── layouts/               # Plantillas de diseño
+│   │   │   └── MainLayout.jsx
+│   │   ├── context/               # Proveedores de contexto (AuthContext.jsx)
+│   │   ├── guards/                # Guardas de acceso (ProtectedRoute.jsx)
+│   │   └── hooks/                 # Hooks de React personalizados (useAuth.js)
 │   │
-│   ├── modules/                   # Módulos de funcionalidad
-│   │   ├── auth/
-│   │   │   ├── LoginPage.jsx
-│   │   │   └── components/
-│   │   │       └── LoginForm.jsx
-│   │   │
-│   │   ├── landing/
-│   │   │   ├── LandingPage.jsx
-│   │   │   └── components/
-│   │   │       └── HeroSection.jsx
-│   │   │
-│   │   ├── libros/
-│   │   │   ├── page/
-│   │   │   │   └── Libros.jsx
-│   │   │   └── components/
-│   │   │       ├── atomos/
-│   │   │       │   ├── Badge.jsx
-│   │   │       │   ├── BookCover.jsx
-│   │   │       │   ├── Button.jsx
-│   │   │       │   └── Modal.jsx
-│   │   │       ├── moleculas/
-│   │   │       │   ├── ActiveReservationNotification.jsx
-│   │   │       │   ├── BookCard.jsx
-│   │   │       │   └── FilterControls.jsx
-│   │   │       └── organismos/
-│   │   │           └── BookGrid.jsx
-│   │   │
-│   │   └── reservation/
-│   │       ├── LaptopReservationPage.jsx
-│   │       └── components/
-│   │           └── ReservationTemplate.jsx
-│   │
-│   └── Colors/
-│       └── ColorPalette.jsx       # Paleta de colores del proyecto
+│   └── services/                  # Capa de consumo de APIs externas
+│       ├── libroService.js
+│       └── prestamoService.js
 │
 ├── public/
 │   └── vite.svg
@@ -148,15 +196,9 @@ FRONTEND/
 └── vercel.json                     # Configuración para deploy en Vercel
 ```
 
-### 🎨 Arquitectura Atomic Design
+### 🎨 Arquitectura del Frontend
 
-El frontend sigue el patrón **Atomic Design**:
-
-- **Atoms** (Átomos): Componentes básicos reutilizables (botones, inputs, badges)
-- **Molecules** (Moléculas): Grupos de átomos que forman componentes funcionales
-- **Organisms** (Organismos): Secciones completas de la interfaz
-- **Templates** (Plantillas): Layouts que estructuran las páginas
-- **Pages** (Páginas): Vistas completas con datos reales
+El frontend está estructurado en base a las mejores prácticas de modularidad, con una separación clara entre vistas específicas de negocio (`pages/`) y componentes o utilidades compartidas (`shared/`). También se implementó un flujo jerárquico inspirado en Atomic Design para los componentes del catálogo y los elementos globales.
 
 ### 🚀 Ejecutar el Frontend
 
@@ -170,10 +212,33 @@ La aplicación se ejecutará en `http://localhost:5173`
 
 ### 📱 Rutas Disponibles
 
-- `/` - Landing page
+**Rutas Públicas:**
+- `/` - Landing page (Página principal)
 - `/login` - Página de inicio de sesión
-- `/laptop` - Reserva de laptops
-- `/libro` - Catálogo de libros
+- `/catalogo` - Catálogo público de libros
+- `/donar` - Formulario de donación de libros
+
+**Rutas de Estudiante (Requieren rol `estudiante`):**
+- `/dashboard` - Panel de control del estudiante
+- `/laptops` - Formulario de reserva de laptops
+- `/cubiculos` - Formulario de reserva de cubículos de estudio
+- `/prestamos` - Listado e historial de préstamos del estudiante
+
+**Rutas de Gestión de Bibliotecarios (Requieren rol `bibliotecario` o `administrador`):**
+- `/gestion/dashboard` - Tablero general de la biblioteca
+- `/gestion/libros` - Control del inventario de libros y ejemplares
+- `/gestion/prestamos` - Préstamos físicos y devoluciones
+- `/gestion/laptops` - Catálogo y estados de laptops
+- `/gestion/reservas/laptops` - Validación de reservas de laptops
+- `/gestion/cubiculos` - Gestión de cubículos físicos
+- `/gestion/reservas/cubiculos` - Validación de reservas de cubículos
+- `/gestion/usuarios` - Control de estudiantes registrados
+
+**Rutas de Administrador (Requieren rol `administrador`):**
+- `/admin/dashboard` - Tablero de administración global
+- `/admin/bibliotecarios` - Alta, baja y edición de cuentas de bibliotecarios
+- `/admin/sanciones` - Control de penalizaciones y bloqueos
+- `/admin/config` - Variables generales de la biblioteca (multas, tiempos máximos, etc.)
 
 ---
 
@@ -181,11 +246,14 @@ La aplicación se ejecutará en `http://localhost:5173`
 
 ```
 oracle/
-├── setup/
-│   ├── 01_schema.sql        # Creación de tablas y constraints
-│   ├── 02_storeObjects.sql  # Funciones, procedimientos y triggers
-│   └── 03_seed.sql          # Datos de prueba
-└── INSTRUCTIONS.md
+└── setup/
+    ├── 01_schema.sql        # Creación de tablas principales y constraints
+    ├── 02_auth_schema.sql   # Tablas auxiliares para autenticación y roles
+    ├── 03_storeObjects.sql  # Funciones, procedimientos y triggers
+    ├── 04_security.sql      # Creación de roles, usuarios de conexión y sinónimos
+    ├── 05_seed.sql          # Inserción de datos iniciales de prueba
+    ├── 06_views.sql         # Vistas de consultas optimizadas para reportes
+    └── 07_packages.sql      # Paquetes PL/SQL lógicos del dominio
 ```
 
 ### 📊 Esquema Principal
@@ -202,40 +270,58 @@ El sistema cuenta con las siguientes entidades principales:
 - **Sancion**: Control de penalizaciones
 - **Biblioteca**: Sedes físicas
 - **UnidadAcademica**: Facultades y escuelas
+- **Autor / Categorias / Etiquetas**: Datos y taxonomías de libros
+- **GrupoUsuarios**: Agrupaciones de estudiantes
 
 ### 🔧 Objetos de Base de Datos
 
 **Funciones principales:**
-- `fn_minutos()` - Convierte formato HH24:MI a minutos
-- `fn_tiene_sancion_activa()` - Verifica sanciones del usuario
-- `fn_reserva_solapa_laptop()` - Detecta conflictos de horarios
-- `fn_dias_atraso()` - Calcula días de retraso en devoluciones
-- `fn_calcular_multa()` - Calcula multas por retraso
+- `fn_minutos()` - Convierte formato HH24:MI a minutos de transcurso diario.
+- `fn_build_ts()` - Construye una marca TIMESTAMP a partir de una fecha y hora (HH24:MI).
+- `fn_tiene_sancion_activa()` - Comprueba si el usuario tiene penalizaciones vigentes.
+- `fn_reserva_solapa_laptop()` - Detecta solapamiento de horarios en reservas de laptops.
+- `fn_reserva_solapa_cubiculo()` - Detecta solapamiento de horarios en reservas de cubículos.
+- `fn_dias_atraso()` - Calcula la cantidad de días de atraso en devoluciones de libros.
+- `fn_calcular_multa()` - Determina el costo de la multa en base a los días de retraso.
 
 **Procedimientos principales:**
-- `pr_crear_prestamo_libro()` - Registra préstamos
-- `pr_devolver_prestamo_libro()` - Procesa devoluciones
-- `pr_reservar_laptop()` - Gestiona reservas de laptops
-- `pr_reservar_cubiculo()` - Gestiona reservas de cubículos
+- `pr_crear_prestamo_libro()` - Registra la entrega de un ejemplar físico.
+- `pr_cancelar_prestamo_libro()` - Permite revertir o anular un préstamo de libro.
+- `pr_asignar_bibliotecario_prestamo()` - Asocia al bibliotecario que procesa la operación.
+- `pr_devolver_prestamo_libro()` - Procesa la devolución y genera posibles multas.
+- `pr_reservar_laptop()` - Genera un ticket de reserva de laptop.
+- `pr_cancelar_reserva_laptop()` - Libera el cupo y cancela la reserva de laptop.
+- `pr_reservar_cubiculo()` - Agenda el uso de un cubículo de estudio.
+- `pr_cancelar_reserva_cubiculo()` - Cancela la agenda del cubículo.
+- `pr_confirmar_reserva_cubiculo()` - Valida la asistencia del estudiante al cubículo.
+- `pr_registrar_ingreso_reserva_cubiculo()` - Marca el inicio formal de uso.
+- `pr_finalizar_reserva_cubiculo()` - Termina el préstamo del espacio.
+- `PRC_HORARIOS_DISP_LAPTOP()` - Consulta la disponibilidad de horarios de laptops.
 
 **Triggers:**
 - Normalización de horas (HH24:MI)
-- Prevención de solapes en reservas
+- Prevención de solapes en reservas de laptops y cubículos
 - Sincronización de estados (ejemplares, usuarios)
-- Actualización automática de estados de préstamos
+- Actualización automática de estados de préstamos y sanciones
 
 ### 🐳 Levantar la Base de Datos
 
+Para levantar el stack completo (Base de datos + API Backend) mediante Docker Compose:
+
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-Esto iniciará Oracle XE 21c en el puerto 1521.
+Esto iniciará Oracle XE 21c y el servidor backend de Express en una red local compartida.
 
-**Credenciales:**
-- Usuario: `BG_USER`
-- Password: (definida en variables de entorno)
-- SID: `XEPDB1`
+**Credenciales de Conexión (Aplicación / Backend):**
+- **Usuario:** `BG_CONNECT`
+- **Contraseña:** `bgconnect123` (o la configurada en `ORACLE_PASSWORD` de tu `.env`)
+- **Service Name:** `XEPDB1` (para Oracle XE 21c) o `FREEPDB1` (para Oracle Free 23c)
+
+**Esquema Propietario (Administrador de DB):**
+- **Usuario:** `BG_OWNER`
+- **Contraseña:** (definida por `ORACLE_XE_BG_OWNER_PASSWORD` en `.env`)
 
 ---
 
@@ -243,8 +329,12 @@ Esto iniciará Oracle XE 21c en el puerto 1521.
 
 ### Backend
 - **Node.js** + **Express 5.1.0**
-- **Morgan** - Logging de peticiones HTTP
-- **Nodemon** - Auto-reload en desarrollo
+- **Oracle Database Driver (oracledb 6.10.0)** - Cliente para interacción con la base de datos
+- **jsonwebtoken 9.0.2** & **bcryptjs 2.4.3** - Firma, verificación de JWT y cifrado de contraseñas
+- **Cors 2.8.5** - Habilitación de CORS
+- **Dotenv 17.2.3** - Manejo de variables de entorno locales
+- **Morgan 1.10.0** - Logging de peticiones HTTP
+- **Nodemon 3.1.10** - Auto-reload en desarrollo
 
 ### Frontend
 - **React 19.1.1**
