@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* === Personalización del tema === */
+@theme {
+  --color-primary: #D9232D;             /* Rojo Biblio */
+  --color-secondary: #E8A03E;           /* Dorado San Marcos */
+  --color-accent: #3B6C9D;              /* Azul Universitario */
+  --color-neutral: #2D2D2D;             /* Gris Oscuro */
+  --color-surface: #FFFFFF;             /* Fondo Claro */
+  --color-background: #F8F9FA;          /* Fondo App */
+}

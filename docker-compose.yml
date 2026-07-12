@@ -1,0 +1,55 @@
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21
+    container_name: bd-oracle-xe-21
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=${ORACLE_XE_PASSWORD}
+      - APP_USER=BG_OWNER
+      - APP_USER_PASSWORD=${ORACLE_XE_BG_OWNER_PASSWORD}
+      - ORACLE_CHARACTERSET=AL32UTF8
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./oracle/setup:/container-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    networks:
+      - biblioguest-network
+    healthcheck:
+      test: ["CMD", "sqlplus", "-v"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  backend:
+    build:
+      context: ./BACKEND
+      dockerfile: Dockerfile
+    container_name: biblioguest-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - ORACLE_USER=${ORACLE_USER}
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+      - ORACLE_CONNECTION_STRING=${ORACLE_CONNECTION_STRING}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+    volumes:
+      - ./BACKEND:/app
+      - /app/node_modules
+    depends_on:
+      oracle:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - biblioguest-network
+
+volumes:
+  oracle-data: {}
+
+networks:
+  biblioguest-network:
+    driver: bridge
