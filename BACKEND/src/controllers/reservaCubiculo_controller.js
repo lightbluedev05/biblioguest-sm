@@ -46,6 +46,18 @@ exports.getReservaCubiculoById = async (req, res) => {
 exports.crearReservaCubiculo = async (req, res) => {
   try {
     const data = req.body;
+    const { horaInicio, horaFin } = data;
+
+    if (horaInicio && horaFin) {
+      const [hIni, mIni] = horaInicio.split(':').map(Number);
+      const [hFin, mFin] = horaFin.split(':').map(Number);
+      const duracionHoras = (hFin - hIni) + (mFin - mIni) / 60;
+      
+      if (duracionHoras > 2) {
+        return respuesta.error(req, res, 'La duración máxima de reserva de cubículo es 2 horas', 400);
+      }
+    }
+
     const result = await service.crearReservaCubiculo(data);
     return respuesta.success(req, res, result, 201);
   } catch (error) {
