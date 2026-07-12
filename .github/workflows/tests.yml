@@ -1,0 +1,35 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file for Docker
+        run: |
+          echo "ORACLE_XE_PASSWORD=admin123" >> .env
+          echo "ORACLE_XE_BG_OWNER_PASSWORD=bgowner123" >> .env
+          echo "NODE_ENV=development" >> .env
+          echo "PORT=3000" >> .env
+          echo "ORACLE_USER=BG_CONNECT" >> .env
+          echo "ORACLE_PASSWORD=bgconnect123" >> .env
+          echo "ORACLE_CONNECTION_STRING=bd-oracle-xe-21:1521/XEPDB1" >> .env
+          echo "JWT_SECRET=850cb77b6f5d85d19b3e5dbd8847abea554a6efd3ac25b10a28763d47a8d226cf9f423af2d0b01c3b19440f50f47001bc197a73e1500383d5d3d8cb286f6c80d" >> .env
+          echo "JWT_EXPIRES_IN=8h" >> .env
+
+      - name: Build and Start Containers
+        run: docker compose up -d
+
+      - name: Wait for Oracle Database to be Healthy
+        run: |
+          echo "Waiting for Oracle database to start up and run initialization scripts..."
+          timeout 120s bash -c 'until [ "$(docker inspect --format "{{.State.Health.Status}}" bd-oracle-xe-21)" == "healthy" ]; do sleep 5; done'
+          echo "Oracle Database is ready!"
+
+      - name: Run Tests inside Backend Container
+        run: docker exec -w /app biblioguest-backend npm test
