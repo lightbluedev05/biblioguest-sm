@@ -1,1 +1,4 @@
 .env
+
+# Config local de Claude Code
+.claude/
